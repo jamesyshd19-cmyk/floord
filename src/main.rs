@@ -13,6 +13,95 @@ const C_LOOP_INTERVAL: Duration = Duration::from_mins(5);
 
 /// Floor daemon - File organizer and cleaner.
 /// Modify its values in '~/.config/floord/config.toml' and reload.
+#[cfg(not(target_os = "windows"))]
+#[derive(Parser, Deserialize)]
+#[command(version, about, long_about = None, group(
+        clap::ArgGroup::new("services")
+            .args(["organizer", "cleanup", "config"])
+            .required(true)
+            .multiple(true)
+    ))]
+#[allow(clippy::struct_excessive_bools)]
+struct Args {
+    /// Enables the inbox organizer function
+    #[arg(long, help_heading = "Inbox organizer", default_value_t = false)]
+    organizer: bool,
+
+    /// Directory used as inbox [default: Downloads]
+    #[arg(long, help_heading = "Inbox organizer", requires = "organizer")]
+    inbox: Option<PathBuf>,
+
+    /// Amount of time in seconds that floord waits for a file to be moved
+    /// (watches the modified value)
+    #[arg(
+        long,
+        help_heading = "Inbox organizer",
+        requires = "organizer",
+        default_value_t = 300
+    )]
+    delay: u64,
+
+    /// Enables the cleanup function
+    #[arg(long, help_heading = "Cleanup", default_value_t = false)]
+    cleanup: bool,
+
+    /// Paths to execute cleanup
+    #[arg(long, help_heading = "Cleanup", requires = "cleanup")]
+    paths: Vec<PathBuf>,
+
+    /// Time in days until a file goes to the `SoonDeleted` folder
+    #[arg(
+        long,
+        help_heading = "Cleanup",
+        requires = "cleanup",
+        default_value_t = 30
+    )]
+    span: u64,
+
+    /// Time in days until a file gets permanently DELETED from the `SoonDeleted` folder
+    #[arg(
+        long,
+        help_heading = "Cleanup",
+        requires = "cleanup",
+        default_value_t = 7
+    )]
+    grace: u64,
+
+    /// Allow daemon to execute deletion actions over the `SoonDeleted` folders according to the grace and span times
+    #[arg(
+        long,
+        help_heading = "Cleanup",
+        requires = "cleanup",
+        default_value_t = false
+    )]
+    allow_deletion: bool,
+
+    /// Executes in loop/daemon-mode.
+    /// Needed for the execution as a service
+    #[arg(long, help_heading = "Daemon", default_value_t = false)]
+    daemon: bool,
+
+    /// Enable notifications
+    #[arg(long, help_heading = "Daemon", default_value_t = false)]
+    notify: bool,
+
+    /// Path to configuration file
+    #[arg(long, help_heading = "Configuration", conflicts_with_all ([
+        "organizer",
+        "inbox",
+        "delay",
+        "cleanup",
+        "span",
+        "grace",
+        "allow_deletion",
+        "notify"
+    ]))]
+    config: Option<PathBuf>,
+}
+
+/// Floor daemon - File organizer and cleaner.
+/// Modify its values in 'C:\Users\you_user\AppData\Roaming\floord\config.toml' and reload.
+#[cfg(target_os = "windows")]
 #[derive(Parser, Deserialize)]
 #[command(version, about, long_about = None, group(
         clap::ArgGroup::new("services")
