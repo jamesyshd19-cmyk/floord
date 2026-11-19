@@ -42,6 +42,7 @@ daemon = true
 
 # Enable Inbox organizer service and its parameters
 organizer = true
+notify = true
 
 # If not specified the program will try to find the default users downloads path
 # inbox = "/home/user/Downloads"

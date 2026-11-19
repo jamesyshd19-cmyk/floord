@@ -88,6 +88,7 @@ if (!(Test-Path $ConfigFile)) {
 
 # General settings
 daemon = true
+notify = true
 
 # ==========================================
 # ORGANIZER
