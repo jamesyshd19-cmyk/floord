@@ -2,7 +2,7 @@ use crate::SOON_DELETED;
 use crate::service_utils::rename_destination;
 use anyhow::Context;
 use notify_rust::Notification;
-use std::fs::{create_dir_all, remove_dir_all, remove_file, rename};
+use std::fs::{create_dir_all, remove_dir, remove_dir_all, remove_file, rename};
 use std::path::Path;
 use std::time::{Duration, SystemTime};
 
@@ -92,4 +92,12 @@ pub fn deletion_phase(folder_path: &Path, limit: &Duration) {
             let _ = remove_dir_all(entry.path());
         }
     }
+}
+
+/// Removes the SoonDeleted folder if it is empty.
+///
+/// `remove_dir` only succeeds on an empty directory, so a folder that still
+/// holds files is never touched and there is no check-then-remove race.
+pub fn remove_empty_soon_deleted(folder_path: &Path) {
+    let _ = remove_dir(folder_path.join(SOON_DELETED));
 }

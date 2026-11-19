@@ -1,4 +1,4 @@
-use crate::cleanups::{cleanup_phase, deletion_phase};
+use crate::cleanups::{cleanup_phase, deletion_phase, remove_empty_soon_deleted};
 use crate::{SECURE, SOON_DELETED};
 use std::fs::DirEntry;
 use std::ops::Add;
@@ -26,6 +26,7 @@ pub fn service(
         if allow_deletion {
             deletion_phase(folder, &limit);
         }
+        remove_empty_soon_deleted(folder);
     }
 }
 
