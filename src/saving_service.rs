@@ -1,6 +1,7 @@
+use crate::UNKNOWN;
 use crate::savings::save;
 use anyhow::{Context, Result};
-use std::fs::{DirEntry, ReadDir};
+use std::fs::{DirEntry, ReadDir, remove_dir};
 use std::path::Path;
 use std::time::{Duration, SystemTime};
 
@@ -15,6 +16,16 @@ pub fn service(inbox_dir: &Path, seconds: &Duration, notify: bool) {
         let Ok(dir_entry) = entry else { continue };
         let _ = manage_entry(&dir_entry, inbox_dir, seconds, notify);
     }
+
+    remove_empty_unknown(inbox_dir);
+}
+
+/// Removes the Unknown folder if it is empty.
+///
+/// `remove_dir` only succeeds on an empty directory, so a folder that still
+/// holds files is never touched and there is no check-then-remove race.
+fn remove_empty_unknown(inbox_dir: &Path) {
+    let _ = remove_dir(inbox_dir.join(UNKNOWN));
 }
 
 /// Filters and manages the file-entry in the folder

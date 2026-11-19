@@ -1,6 +1,6 @@
 use dirs::{audio_dir, document_dir, picture_dir, video_dir};
 use floord::{UNKNOWN, saving_service};
-use std::fs::{File, create_dir, create_dir_all, remove_file};
+use std::fs::{File, create_dir, create_dir_all, remove_dir, remove_file};
 use std::thread::sleep;
 use std::time::Duration;
 use tempfile::{tempdir, tempdir_in};
@@ -59,6 +59,57 @@ fn move_to_unknown_by_duration() {
     assert!(!probe.exists());
 
     assert!(tmp.join(UNKNOWN).exists());
+    assert!(tmp.join(UNKNOWN).join(TEST_FILE).exists())
+}
+
+#[test]
+fn no_unknown_folder_when_nothing_to_move() {
+    let tmp = tempdir().unwrap();
+    let tmp = tmp.path();
+    saving_service(tmp, &Duration::ZERO, false);
+    assert!(!tmp.join(UNKNOWN).exists())
+}
+
+#[test]
+fn no_unknown_folder_when_files_are_too_recent() {
+    let tmp = tempdir().unwrap();
+    let tmp = tmp.path();
+    create_dir(tmp.join(TEST_FILE)).unwrap();
+    saving_service(tmp, &Duration::new(300, 0), false);
+    assert!(!tmp.join(UNKNOWN).exists())
+}
+
+#[test]
+fn remove_empty_unknown_folder() {
+    let tmp = tempdir().unwrap();
+    let tmp = tmp.path();
+    create_dir(tmp.join(UNKNOWN)).unwrap();
+    saving_service(tmp, &Duration::ZERO, false);
+    assert!(!tmp.join(UNKNOWN).exists())
+}
+
+#[test]
+fn remove_unknown_folder_once_emptied() {
+    let tmp = tempdir().unwrap();
+    let tmp = tmp.path();
+    let probe = tmp.join(TEST_FILE);
+    create_dir(&probe).unwrap();
+    saving_service(tmp, &Duration::ZERO, false);
+    let moved = tmp.join(UNKNOWN).join(TEST_FILE);
+    assert!(moved.exists());
+
+    // The user empties Unknown, the next run drops the empty folder
+    remove_dir(&moved).unwrap();
+    saving_service(tmp, &Duration::ZERO, false);
+    assert!(!tmp.join(UNKNOWN).exists())
+}
+
+#[test]
+fn keep_unknown_folder_with_files() {
+    let tmp = tempdir().unwrap();
+    let tmp = tmp.path();
+    create_dir_all(tmp.join(UNKNOWN).join(TEST_FILE)).unwrap();
+    saving_service(tmp, &Duration::ZERO, false);
     assert!(tmp.join(UNKNOWN).join(TEST_FILE).exists())
 }
 
