@@ -1,4 +1,4 @@
-use crate::cleanups::{cleanup_phase, deletion_phase, remove_empty_soon_deleted};
+use crate::services::cleanups::{cleanup_phase, deletion_phase, remove_empty_soon_deleted};
 use crate::{SECURE, SOON_DELETED};
 use std::fs::DirEntry;
 use std::ops::Add;
