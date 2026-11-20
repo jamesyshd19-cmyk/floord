@@ -6,8 +6,8 @@ use std::{
 use notify_rust::Notification;
 
 pub enum Action {
-    SAVE,
-    CLEANUP,
+    Save,
+    Cleanup,
 }
 
 pub fn rename_destination(old_path: PathBuf) -> PathBuf {
@@ -55,8 +55,8 @@ pub fn rename_and_notify(file_path: &Path, new_path: &Path, notify: bool, action
         pretty_path.push(new_path.file_name().unwrap_or_default());
 
         let action = match action {
-            Action::SAVE => "Saved",
-            Action::CLEANUP => "Cleaned",
+            Action::Save => "Saved",
+            Action::Cleanup => "Cleaned",
         };
 
         let _ = Notification::new()

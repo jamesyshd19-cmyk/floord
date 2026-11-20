@@ -1,5 +1,5 @@
 use crate::UNKNOWN;
-use crate::services::service_utils::Action::SAVE;
+use crate::services::service_utils::Action::Save;
 use crate::services::service_utils::{rename_and_notify, rename_destination};
 use dirs::{audio_dir, document_dir, picture_dir, video_dir};
 use std::fs::{DirEntry, create_dir_all};
@@ -163,7 +163,7 @@ pub fn save(file: &DirEntry, inbox: &Path, notify: bool) {
     if let Some(folder) = get_destination_folder(&file_path) {
         new_path = folder.join(file_name);
         let new_path = rename_destination(new_path);
-        rename_and_notify(&file_path, &new_path, notify, SAVE);
+        rename_and_notify(&file_path, &new_path, notify, Save);
         return;
     }
     if let Some(unknown_path) = new_path.parent()
@@ -172,7 +172,7 @@ pub fn save(file: &DirEntry, inbox: &Path, notify: bool) {
         create_dir_all(unknown_path).unwrap_or(());
     }
     let new_path = rename_destination(new_path);
-    rename_and_notify(&file_path, &new_path, notify, SAVE);
+    rename_and_notify(&file_path, &new_path, notify, Save);
 }
 
 fn get_destination_folder(file_path: &Path) -> Option<PathBuf> {

@@ -1,5 +1,5 @@
 use crate::SOON_DELETED;
-use crate::services::service_utils::Action::CLEANUP;
+use crate::services::service_utils::Action::Cleanup;
 use crate::services::service_utils::{rename_and_notify, rename_destination};
 use anyhow::Context;
 use std::fs::{create_dir_all, remove_dir, remove_dir_all, remove_file};
@@ -40,7 +40,7 @@ pub fn cleanup_phase(duration_old: &Duration, path: &Path, notify: bool) {
         };
 
         let new_path = rename_destination(new_path.join(SOON_DELETED).join(file_name));
-        rename_and_notify(path, &new_path, notify, CLEANUP);
+        rename_and_notify(path, &new_path, notify, Cleanup);
     }
 }
 
