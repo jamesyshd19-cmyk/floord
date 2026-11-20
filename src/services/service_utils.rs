@@ -1,4 +1,14 @@
-use std::path::PathBuf;
+use std::{
+    fs::rename,
+    path::{Path, PathBuf},
+};
+
+use notify_rust::Notification;
+
+pub enum Action {
+    Save,
+    Cleanup,
+}
 
 pub fn rename_destination(old_path: PathBuf) -> PathBuf {
     let mut new_path = old_path;
@@ -30,5 +40,34 @@ pub fn rename_destination(old_path: PathBuf) -> PathBuf {
         new_path
     } else {
         new_path
+    }
+}
+
+pub fn rename_and_notify(file_path: &Path, new_path: &Path, notify: bool, action: Action) {
+    if rename(file_path, new_path).is_ok() && notify {
+        let file_name = file_path.file_name().unwrap_or_default();
+        let mut pretty_path = new_path
+            .parent()
+            .and_then(Path::file_name)
+            .unwrap_or_default()
+            .to_os_string();
+        pretty_path.push("/");
+        pretty_path.push(new_path.file_name().unwrap_or_default());
+
+        let action = match action {
+            Action::Save => "Saved",
+            Action::Cleanup => "Cleaned",
+        };
+
+        let _ = Notification::new()
+            .summary("Floord")
+            .appname("Floord")
+            .body(&format!(
+                "{} {} -> {}",
+                action,
+                file_name.to_string_lossy(),
+                pretty_path.to_string_lossy()
+            ))
+            .show();
     }
 }
