@@ -43,7 +43,7 @@ pub fn rename_destination(old_path: PathBuf) -> PathBuf {
     }
 }
 
-pub fn rename_and_notify(file_path: &Path, new_path: &Path, notify: bool, action: Action) {
+pub fn rename_and_notify(file_path: &Path, new_path: &Path, notify: bool, action: &Action) {
     if rename(file_path, new_path).is_ok() && notify {
         let file_name = file_path.file_name().unwrap_or_default();
         let mut pretty_path = new_path

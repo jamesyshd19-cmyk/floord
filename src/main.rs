@@ -8,7 +8,7 @@ use std::thread;
 use std::thread::sleep;
 use std::time::Duration;
 
-const O_LOOP_INTERVAL: Duration = Duration::from_millis(100);
+const O_LOOP_INTERVAL: Duration = Duration::from_secs(5);
 const C_LOOP_INTERVAL: Duration = Duration::from_mins(5);
 
 #[derive(Parser, Deserialize)]

@@ -1,16 +1,15 @@
 use crate::UNKNOWN;
 use crate::services::savings::save;
-use anyhow::{Context, Result};
-use std::fs::{DirEntry, ReadDir, remove_dir};
+use anyhow::Result;
+use std::fs::{DirEntry, remove_dir};
 use std::path::Path;
 use std::time::{Duration, SystemTime};
 
 /// Initialize the service
 pub fn service(inbox_dir: &Path, seconds: &Duration, notify: bool) {
-    let read_dir: ReadDir = inbox_dir
-        .read_dir()
-        .context("reading inbox folder")
-        .unwrap();
+    let Ok(read_dir) = inbox_dir.read_dir() else {
+        return;
+    };
 
     for entry in read_dir {
         let Ok(dir_entry) = entry else { continue };

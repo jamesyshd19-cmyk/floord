@@ -1,13 +1,14 @@
 use crate::SOON_DELETED;
 use crate::services::service_utils::Action::Cleanup;
 use crate::services::service_utils::{rename_and_notify, rename_destination};
-use anyhow::Context;
 use std::fs::{create_dir_all, remove_dir, remove_dir_all, remove_file};
 use std::path::Path;
 use std::time::{Duration, SystemTime};
 
 pub fn cleanup_phase(duration_old: &Duration, path: &Path, notify: bool) {
-    let metadata = path.metadata().context("reading metadata").unwrap();
+    let Ok(metadata) = path.metadata() else { // Future report error
+        return;
+    };
     if metadata
         .accessed()
         .ok()
@@ -31,16 +32,14 @@ pub fn cleanup_phase(duration_old: &Duration, path: &Path, notify: bool) {
     };
 
     if let Some(soon_deleted) = path.parent().map(|i| i.join(SOON_DELETED)) {
-        create_dir_all(&soon_deleted)
-            .context("creating SoonDeleted")
-            .unwrap();
+        let Ok(()) = create_dir_all(&soon_deleted) else { return }; // Future report error
 
         let Some(new_path) = path.parent() else {
             return;
         };
 
         let new_path = rename_destination(new_path.join(SOON_DELETED).join(file_name));
-        rename_and_notify(path, &new_path, notify, Cleanup);
+        rename_and_notify(path, &new_path, notify, &Cleanup);
     }
 }
 
@@ -87,7 +86,7 @@ pub fn deletion_phase(folder_path: &Path, limit: &Duration) {
     }
 }
 
-/// Removes the SoonDeleted folder if it is empty.
+/// Removes the `SoonDeleted` folder if it is empty.
 ///
 /// `remove_dir` only succeeds on an empty directory, so a folder that still
 /// holds files is never touched and there is no check-then-remove race.
