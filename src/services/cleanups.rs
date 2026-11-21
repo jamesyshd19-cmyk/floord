@@ -6,7 +6,8 @@ use std::path::Path;
 use std::time::{Duration, SystemTime};
 
 pub fn cleanup_phase(duration_old: &Duration, path: &Path, notify: bool) {
-    let Ok(metadata) = path.metadata() else { // Future report error
+    let Ok(metadata) = path.metadata() else {
+        // Future report error
         return;
     };
     if metadata
@@ -32,7 +33,9 @@ pub fn cleanup_phase(duration_old: &Duration, path: &Path, notify: bool) {
     };
 
     if let Some(soon_deleted) = path.parent().map(|i| i.join(SOON_DELETED)) {
-        let Ok(()) = create_dir_all(&soon_deleted) else { return }; // Future report error
+        let Ok(()) = create_dir_all(&soon_deleted) else {
+            return;
+        }; // Future report error
 
         let Some(new_path) = path.parent() else {
             return;
