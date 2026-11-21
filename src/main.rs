@@ -98,6 +98,25 @@ struct Args {
     config: Option<PathBuf>,
 }
 
+impl Default for Args {
+    fn default() -> Self {
+        println!("Running default parameters");
+        Self {
+            organizer: true,
+            inbox: None,
+            delay: 300,
+            cleanup: true,
+            paths: vec![],
+            span: 30,
+            grace: 5,
+            allow_deletion: false,
+            daemon: true,
+            notify: true,
+            config: None,
+        }
+    }
+}
+
 fn run_organizer(cli_args: &Args) {
     let inbox_path = cli_args
         .inbox
@@ -184,8 +203,8 @@ fn main() {
 
     let cli_args: Arc<Args> = match arguments.config {
         Some(file_path) => {
-            let content = std::fs::read_to_string(file_path).unwrap();
-            let toml_args: Args = toml::from_str(&content).unwrap();
+            let content = std::fs::read_to_string(file_path).unwrap_or_default();
+            let toml_args: Args = toml::from_str(&content).unwrap_or_default();
             Arc::new(toml_args)
         }
         None => Arc::new(arguments),
