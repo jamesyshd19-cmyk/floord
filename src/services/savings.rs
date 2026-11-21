@@ -176,18 +176,18 @@ pub fn save(file: &DirEntry, inbox: &Path, notify: bool) {
 }
 
 fn get_destination_folder(file_path: &Path) -> Option<PathBuf> {
-    if let Some(extension) = file_path.extension().and_then(|i| i.to_str()) {
-        let folders = [
-            (AUDIO_EXT, audio_dir()),
-            (PICTURE_EXT, picture_dir()),
-            (VIDEO_EXT, video_dir()),
-            (DOCUMENT_EXT, document_dir()),
-        ];
+    let extension = file_path.extension()?.to_str()?.to_lowercase();
 
-        for (list, func) in folders {
-            if list.contains(&extension) {
-                return func;
-            }
+    let folders = [
+        (AUDIO_EXT, audio_dir()),
+        (PICTURE_EXT, picture_dir()),
+        (VIDEO_EXT, video_dir()),
+        (DOCUMENT_EXT, document_dir()),
+    ];
+
+    for (list, func) in folders {
+        if list.contains(&extension.as_str()) {
+            return func;
         }
     }
     None

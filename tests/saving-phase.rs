@@ -1,6 +1,6 @@
 use dirs::{audio_dir, document_dir, picture_dir, video_dir};
 use floord::{UNKNOWN, saving_service};
-use std::fs::{File, create_dir, create_dir_all, remove_dir, remove_file};
+use std::fs::{File, create_dir, create_dir_all, remove_dir};
 use std::thread::sleep;
 use std::time::Duration;
 use tempfile::{tempdir, tempdir_in};
@@ -45,6 +45,23 @@ fn move_to_unknown() {
 
     assert!(tmp.join(UNKNOWN).exists());
     assert!(tmp.join(UNKNOWN).join(TEST_FILE).exists())
+}
+
+#[test]
+fn move_to_unknown_uppercase_extension() {
+    let tmp = tempdir_in(".").unwrap();
+    let secs = Duration::ZERO;
+
+    let test_file = format!("{TEST_FILE}.FOAIJNF");
+    let probe = tmp.path().join(&test_file);
+
+    File::create_new(&probe).unwrap();
+
+    saving_service(tmp.path(), &secs, false);
+    let destination = tmp.path().join(UNKNOWN).join(&test_file);
+
+    assert!(!probe.exists());
+    assert!(destination.exists());
 }
 
 #[test]
@@ -129,7 +146,24 @@ fn move_to_documents() {
 
     assert!(!probe.exists());
     assert!(destination.exists());
-    remove_file(destination).unwrap();
+}
+
+#[test]
+#[ignore]
+fn move_to_documents_uppercase_extension() {
+    let tmp = tempdir_in(".").unwrap();
+    let secs = Duration::ZERO;
+
+    let test_file = format!("{TEST_FILE}.PDF");
+    let probe = tmp.path().join(&test_file);
+
+    File::create_new(&probe).unwrap();
+
+    saving_service(tmp.path(), &secs, false);
+    let destination = document_dir().unwrap().join(&test_file);
+
+    assert!(!probe.exists());
+    assert!(destination.exists());
 }
 
 #[test]
@@ -148,7 +182,24 @@ fn move_to_pictures() {
 
     assert!(!probe.exists());
     assert!(destination.exists());
-    remove_file(destination).unwrap();
+}
+
+#[test]
+#[ignore]
+fn move_to_pictures_uppercase_extension() {
+    let tmp = tempdir_in(".").unwrap();
+    let secs = Duration::ZERO;
+
+    let test_file = format!("{TEST_FILE}.JPG");
+    let probe = tmp.path().join(&test_file);
+
+    File::create_new(&probe).unwrap();
+
+    saving_service(tmp.path(), &secs, false);
+    let destination = picture_dir().unwrap().join(&test_file);
+
+    assert!(!probe.exists());
+    assert!(destination.exists());
 }
 
 #[test]
@@ -167,7 +218,24 @@ fn move_to_audio() {
 
     assert!(!probe.exists());
     assert!(destination.exists());
-    remove_file(destination).unwrap();
+}
+
+#[test]
+#[ignore]
+fn move_to_audio_uppercase_extension() {
+    let tmp = tempdir_in(".").unwrap();
+    let secs = Duration::ZERO;
+
+    let test_file = format!("{TEST_FILE}.MP3");
+    let probe = tmp.path().join(&test_file);
+
+    File::create_new(&probe).unwrap();
+
+    saving_service(tmp.path(), &secs, false);
+    let destination = audio_dir().unwrap().join(&test_file);
+
+    assert!(!probe.exists());
+    assert!(destination.exists());
 }
 
 #[test]
@@ -186,7 +254,24 @@ fn move_to_video() {
 
     assert!(!probe.exists());
     assert!(destination.exists());
-    remove_file(destination).unwrap();
+}
+
+#[test]
+#[ignore]
+fn move_to_video_uppercase_extension() {
+    let tmp = tempdir_in(".").unwrap();
+    let secs = Duration::ZERO;
+
+    let test_file = format!("{TEST_FILE}.MKV");
+    let probe = tmp.path().join(&test_file);
+
+    File::create_new(&probe).unwrap();
+
+    saving_service(tmp.path(), &secs, false);
+    let destination = video_dir().unwrap().join(&test_file);
+
+    assert!(!probe.exists());
+    assert!(destination.exists());
 }
 
 //-------------------------------------------------------------------------------------------------
